@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/pic">
+        <file>myRes/board.bmp</file>
+        <file>myRes/barrier.bmp</file>
+        <file>myRes/black.bmp</file>
+        <file>myRes/white.bmp</file>
+    </qresource>
+</RCC>
