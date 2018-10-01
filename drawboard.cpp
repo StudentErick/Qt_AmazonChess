@@ -10,64 +10,37 @@ DrawBoard::DrawBoard(QWidget *parent) : QWidget(parent)
     // 设置初始化位置
     this->setGeometry(POSW,POSH,BOARD_SIZE,BOARD_SIZE);
 
-    // 加载棋盘的图片
-    m_board.setParent(this);
+    // 加载棋盘图片
+    m_blackPic.load(BLACK_PATH);
+    m_whitePic.load(WHITE_PATH);
+    m_barrierPic.load(BARRIER_PATH);
     m_boardPic.load(BOARD_PATH);
-    m_boardPic.scaled(BOARD_SIZE,BOARD_SIZE);
-
-    // 加载棋盘的图片
-    m_board.setParent(this);
-    m_boardPic.load(BOARD_PATH);
-    m_boardPic.scaled(BOARD_SIZE,BOARD_SIZE);
-    m_board.setGeometry(0,0,BOARD_SIZE,BOARD_SIZE);
-    m_board.setPixmap(m_boardPic);
-
-    // 4个黑子和白子
-    for(int i=0;i<4;++i){
-        m_nchessBlack[i].setParent(this);
-        m_nchessBlackPic[i].load(BLACK_PATH);
-        m_nchessBlackPic[i].scaled(CHESS_SIZE,CHESS_SIZE);
-
-        m_nchessWhite[i].setParent(this);
-        m_nchessWhitePic[i].load(WHITE_PATH);
-        m_nchessWhitePic[i].scaled(CHESS_SIZE,CHESS_SIZE);
-    }
-    // 最多92个障碍
-    for(int i=0;i<92;++i){
-        m_nchessBarrier[i].setParent(this);
-        m_nchessBarrierPic[i].load(BARRIER_PATH);
-        m_nchessBarrierPic[i].scaled(CHESS_SIZE,CHESS_SIZE);
-    }
 
     initBoard();  // 这里初始化
 }
 
-void DrawBoard::drawBoard(){
-    m_blackN=0;
-    m_whiteN=0;
-    m_barrierN=0;
+void DrawBoard::paintEvent(QPaintEvent*){
+    QPainter painter(this);
+    painter.drawPixmap(0,0,m_boardPic);  // 绘制棋盘
     for(int i=0;i<10;++i){
         for(int j=0;j<10;++j){
-            if(m_nBoard[i][j]==EMPTY){  // 空的不放置任何东西
+            if(m_nBoard[i][j]==EMPTY){
                 continue;
             }
-            // 注意下面的i与j是正好相反的
-            if(m_nBoard[i][j]==BLACK){ // 黑子
-                m_nchessBlack[m_blackN].setGeometry(CHESS_SIZE*j,CHESS_SIZE*i,CHESS_SIZE,CHESS_SIZE);
-                m_nchessBlack[m_blackN].setPixmap(m_nchessBlackPic[m_blackN]);
-                m_blackN++;
-            }else if(m_nBoard[i][j]==WHITE){  // 白子
-                m_nchessWhite[m_whiteN].setGeometry(CHESS_SIZE*j,CHESS_SIZE*i,CHESS_SIZE,CHESS_SIZE);
-                m_nchessWhite[m_whiteN].setPixmap(m_nchessWhitePic[m_whiteN]);
-                m_whiteN++;
-            }else{  // 障碍
-                m_nchessBarrier[m_barrierN].setGeometry(CHESS_SIZE*j,CHESS_SIZE*i,CHESS_SIZE,CHESS_SIZE);
-                m_nchessBarrier[m_barrierN].setPixmap(m_nchessBarrierPic[m_barrierN]);
-                m_barrierN++;
+            // 绘制不同的棋子
+            if(m_nBoard[i][j]==BLACK){
+                painter.drawPixmap(CHESS_SIZE*j,CHESS_SIZE*i,m_blackPic);
+            }else if(m_nBoard[i][j]==WHITE){
+                painter.drawPixmap(CHESS_SIZE*j,CHESS_SIZE*i,m_whitePic);
+            }else{
+                painter.drawPixmap(CHESS_SIZE*j,CHESS_SIZE*i,m_barrierPic);
             }
         }
     }
+}
 
+void DrawBoard::drawBoard(){
+    this->update();  // 执行刷新
 }
 
 void DrawBoard::initBoard(){

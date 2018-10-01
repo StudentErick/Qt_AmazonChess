@@ -3,21 +3,21 @@
 
 Manager::Manager(QObject *parent) : QObject(parent){
     initBoard();
-    m_curItr=-1;
     m_GameMode=NoChoice;  // 初始化未选择状态
 }
 
 void Manager::previousMove(){
-    if(m_MoveList.empty()||m_curItr<0){  // 第一步不能在往后走了
+    if(m_newMove.empty()){
         emit sendMessage(QString(tr("已经是第一步了!")));
         return;
     }
 
-    auto t=static_cast<std::vector<ChessMove>::size_type>(m_curItr);
-    const auto& m=m_MoveList[t];
+    auto m=m_newMove.top();
+    m_newMove.pop();
+    m_pastMove.push(m);  // 悔棋的放到第二个栈中
+
     emit sendMoveMessage(m);   // 向外部发送信息
     emit sendRetractMessage(m);  // 向外部发送信息
-    --m_curItr;
 
     // 局面数据结构的恢复
     m_nBoard[m.FromX][m.FromY]=m.side;
@@ -32,13 +32,14 @@ void Manager::previousMove(){
 }
 
 void Manager::nextMove(){
-    if(m_MoveList.empty()||m_curItr==static_cast<int>(m_MoveList.size()-1)){
+    if(m_pastMove.empty()){
         emit sendMessage(QString(tr("已经是最后一步了!")));
         return;
     }
-    ++m_curItr;
-    auto t=static_cast<std::vector<ChessMove>::size_type>(m_curItr);
-    const auto& m=m_MoveList[t];
+    auto m=m_pastMove.top();
+    m_pastMove.pop();
+    m_newMove.push(m);  // 放到之前的栈中
+
     emit sendMoveMessage(m);   // 向外部发送信息
 
     // 局面数据结构的处理
@@ -80,13 +81,7 @@ void Manager::PVPMode(){  // 人人模式不用判断共线，因为点击的时
         emit sendMessage(str);
         emit sendNextSide(EMPTY);
     }
-    // 加入步法之前，需要先清空多余的
-    if(m_curItr!=-1){
-        auto it=m_MoveList.begin()+m_curItr;
-        m_MoveList.erase(it,m_MoveList.end());
-    }
-    m_MoveList.push_back(m);
-    ++m_curItr;
+    m_newMove.push(m);
 }
 
 void Manager::PVP_BlackFirst(){
@@ -127,9 +122,16 @@ void Manager::initBoard(){
     m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
 
     // 初始化队列
+    /*
     m_MoveList.erase(m_MoveList.begin(),m_MoveList.end());
     m_curItr=-1;
-
+    */
+    while(!m_newMove.empty()){
+        m_newMove.pop();
+    }
+    while(!m_pastMove.empty()){
+        m_pastMove.pop();
+    }
     emit sendInitBoard(); // 发射初始化信号
 }
 

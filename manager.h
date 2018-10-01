@@ -4,6 +4,7 @@
 #include <QObject>
 #include <vector>
 #include <QString>
+#include <stack>
 #include "utils.h"
 /*
 *  对弈逻辑控制的部分，处理所有的逻辑控制
@@ -67,10 +68,10 @@ private:
     ChessMove m_getMove;
     // 对弈模式
     GameMode m_GameMode;
-    // 走法队列
-    std::vector<ChessMove> m_MoveList;
-    // 指示当前的走法位置
-    int m_curItr;
+
+    // 存储步法的栈
+    std::stack<ChessMove>m_newMove;
+    std::stack<ChessMove>m_pastMove;
 
     // 对弈的棋盘
     int m_nBoard[10][10];

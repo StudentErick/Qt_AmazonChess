@@ -5,7 +5,9 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QMouseEvent>
+#include <QPaintEvent>
 #include <QString>
+#include <QPainter>
 #include "utils.h"
 /*
 * DrawBoard类用于绘制棋盘，同时处理己方点击棋盘的事件。
@@ -40,7 +42,8 @@ public slots:
 protected:
     // 重写鼠标点击事件
     void mousePressEvent(QMouseEvent *event) override;
-
+    // 绘制事件
+    void paintEvent(QPaintEvent*)override;
     // 调试棋盘用
     void DebugBoard();
 private:
@@ -53,22 +56,11 @@ private:
     // 是否响应鼠标点击
     bool m_checkable;
 
-    // 棋盘的图像和标签
+    // 棋盘棋子的图片
     QPixmap m_boardPic;
-    QLabel m_board;
-
-    // 棋子的图像和标签
-    QLabel m_nchessBlack[4];
-    QPixmap m_nchessBlackPic[4];
-    QLabel m_nchessWhite[4];
-    QPixmap m_nchessWhitePic[4];
-    QLabel m_nchessBarrier[92];
-    QPixmap m_nchessBarrierPic[92];
-
-    // 当前使用到第几个图片的标记
-    int m_blackN;
-    int m_whiteN;
-    int m_barrierN;
+    QPixmap m_blackPic;
+    QPixmap m_whitePic;
+    QPixmap m_barrierPic;
 
     // 棋盘的数据结构
     int m_nBoard[10][10];
