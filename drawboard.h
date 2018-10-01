@@ -9,44 +9,47 @@
 #include "utils.h"
 /*
 * DrawBoard类用于绘制棋盘，同时处理己方点击棋盘的事件。
-* 己方点击进行走子的时候，需要进行简单的逻辑判断
+* 点击进行走子的时候，需要进行简单的逻辑判断
+* Erick Lv 09/30/2018
 */
 class DrawBoard : public QWidget
 {
     Q_OBJECT
 public:
     explicit DrawBoard(QWidget *parent = nullptr);
-    // 传入当前的走子方，可以进行走子
-    void setMove(int side);
 
 signals:
     // 用于向外界发送走子的策略
     void sendMove(ChessMove move);
-
     // 向外界发送当前的点击信息
     void sendMessage(QString msg);
 
 public slots:
-    // 获取外界的坐标，更新棋盘
-    void refreshBoard(const ChessMove& chessMove);
-    // 设置对战方式
-    void setPVC(bool flag);
+    // 还原状态
+    void initBoard();
+    // 设置当前的走子方
+    void setSide(int player);
+    // 走棋
+    void makeMove(const ChessMove& chessMove);
+    // 悔棋
+    void retractMove(const ChessMove& chessMove);
+    // 设置是否可以点击
+    void setCheckable(bool flag);
 
     // QWidget interface
 protected:
     // 重写鼠标点击事件
     void mousePressEvent(QMouseEvent *event) override;
 
-  //  void debugShow();  // 用于调试的
 private:
-    // 绘制棋盘
-    void drawBoard();
-
     // 共线的判断函数
     bool judgeOnline(int lx,int ly,int x,int y);
 
-    // 单机对战标记，true是人机，false是联网
-    bool m_PVC;
+    // 绘制棋盘
+    void drawBoard();
+
+    // 是否响应鼠标点击
+    bool m_checkable;
 
     // 棋盘的图像和标签
     QPixmap m_boardPic;

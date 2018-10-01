@@ -9,3 +9,7 @@ GameMessage::GameMessage(QWidget* parent):QTextBrowser (parent)
 void GameMessage::receiveMessage(QString str){
     this->append(str);
 }
+
+void GameMessage::clearMessage(){
+    this->clear();
+}

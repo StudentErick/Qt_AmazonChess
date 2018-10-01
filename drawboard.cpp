@@ -3,21 +3,12 @@
 
 DrawBoard::DrawBoard(QWidget *parent) : QWidget(parent)
 {
-    m_side=BLACK;  // 走棋的一方，初始化空的
-    m_turn=0;      // 应当取棋子
-    m_PVC=true;    // 默认人机对战
+    m_side=EMPTY;      // 走棋的一方，初始化空的
+    m_turn=0;          // 应当取棋子
+    //    m_GameMode=PVP;    // 默认人人对弈
+    m_checkable=false; // 默认不能点击界面
     // 设置初始化位置
     this->setGeometry(POSW,POSH,BOARD_SIZE,BOARD_SIZE);
-    // 初始化局面
-    for(int i=0;i<10;++i){
-        for(int j=0;j<10;++j){
-            m_nBoard[i][j]=EMPTY;
-        }
-    }
-    m_nBoard[0][3]=BLACK;m_nBoard[0][6]=BLACK;
-    m_nBoard[3][0]=BLACK;m_nBoard[3][9]=BLACK;
-    m_nBoard[6][0]=WHITE;m_nBoard[6][9]=WHITE;
-    m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
 
     // 加载棋盘的图片
     m_board.setParent(this);
@@ -42,8 +33,8 @@ DrawBoard::DrawBoard(QWidget *parent) : QWidget(parent)
         m_nchessBarrierPic[i].load(BARRIER_PATH);
         m_nchessBarrierPic[i].scaled(CHESS_SIZE,CHESS_SIZE);
     }
-    // 绘制棋盘
-    drawBoard();
+
+    initBoard();  // 这里初始化
 }
 
 void DrawBoard::drawBoard(){
@@ -74,17 +65,43 @@ void DrawBoard::drawBoard(){
 
 }
 
-void DrawBoard::refreshBoard(const ChessMove& chessMove){
+void DrawBoard::initBoard(){
+    // 初始化局面
+    for(int i=0;i<10;++i){
+        for(int j=0;j<10;++j){
+            m_nBoard[i][j]=EMPTY;
+        }
+    }
+    // 初始化皇后的位置
+    m_nBoard[0][3]=BLACK;m_nBoard[0][6]=BLACK;
+    m_nBoard[3][0]=BLACK;m_nBoard[3][9]=BLACK;
+    m_nBoard[6][0]=WHITE;m_nBoard[6][9]=WHITE;
+    m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
+    // 绘制棋盘
+    drawBoard();
+}
+
+void DrawBoard::makeMove(const ChessMove& chessMove){
     int side=m_nBoard[chessMove.FromX][chessMove.FromY];
     m_nBoard[chessMove.FromX][chessMove.FromY]=EMPTY;
     m_nBoard[chessMove.ToX][chessMove.ToY]=side;
     m_nBoard[chessMove.BarX][chessMove.BarY]=BARRIER;
+    m_side=-chessMove.side;  // 注意取负号
+    drawBoard();  // 重新绘制棋盘
+}
+
+void DrawBoard::retractMove(const ChessMove& chessMove){
+    int side=m_nBoard[chessMove.FromX][chessMove.FromY];
+    m_nBoard[chessMove.ToX][chessMove.ToY]=EMPTY;
+    m_nBoard[chessMove.FromX][chessMove.FromY]=side;
+    m_nBoard[chessMove.BarX][chessMove.BarY]=EMPTY;
+    m_side=chessMove.side; // 没负号
     drawBoard();  // 重新绘制棋盘
 }
 
 void DrawBoard::mousePressEvent(QMouseEvent *event){
-    // 不是当前行棋方或者不是人机对战，点击无效
-    if(m_side==EMPTY||m_PVC==false){
+    // 不能点击，不是当前行棋方或者是机器对战，点击无效
+    if(!m_checkable){
         return;
     }
     if(event->button()==Qt::LeftButton){
@@ -144,7 +161,8 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                 m_nBoard[ix][iy]=BARRIER;
                 drawBoard();
                 m_turn=0;
-                m_side=-m_side;   // 应该是对面走了///////////////////////////////////////
+                // 这里有Manager进行管理
+                // m_side=-m_side;   // 应该是对面走了///////////////////////////////////////
                 drawBoard();
                 // 获取用户完整的一步走法，并且通过信号发送出去
                 m_chessMove.side=m_side;
@@ -162,19 +180,22 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                 emit sendMove(m_chessMove);  // 发送走棋的数据
             }else{
                 QString str(tr("放置障碍的方式非法！"));
-                emit  sendMessage(str);
+                emit sendMessage(str);
                 return;
             }
         }
     }
 }
 
-void DrawBoard::setMove(int side){
+void DrawBoard::setSide(int side){
     m_side=side;
+    if(side==EMPTY){  // 已经知道胜负了
+        setCheckable(false);
+    }
 }
 
-void DrawBoard::setPVC(bool flag){
-    m_PVC=flag;
+void DrawBoard::setCheckable(bool flag){
+    m_checkable=flag;
 }
 
 bool DrawBoard::judgeOnline(int lx,int ly,int x,int y){

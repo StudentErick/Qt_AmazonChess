@@ -5,6 +5,7 @@
 #include <cmath>
 /*
 * 下面是棋子基本的数据结构
+* Erick Lv 09/30/2018
 */
 const int BLACK=1;
 const int WHITE=-1;
@@ -15,13 +16,16 @@ const int EMPTY=0;
 const int POSW=30;
 const int POSH=30;
 
+// 菜单栏的宽度
+const int MENUBAR_WIDTH=20;
+
 // 初始化对弈信息位置坐标
 const int MSG_POSW=700;
-const int MSG_POSH=10;
+const int MSG_POSH=30;
 
 // 对弈信息显示的长宽
 const int MSG_WIDTH=280;
-const int MSG_HIGHT=800;
+const int MSG_HIGHT=500;
 
 // 棋盘和棋子的边长
 const int BOARD_SIZE=500;
@@ -40,5 +44,19 @@ struct ChessMove{
     int ToX,ToY;     // 放皇后的位置
     int BarX,BarY;   // 放障碍的位置
 };
+
+// 封装判断共线的数据
+struct LineMove{
+    int lx,ly;
+    int x,y;
+};
+
+// 对弈模式：人人、人机、机机、未选择
+enum GameMode{PVP,PVC,CVC,NoChoice};
+
+// 8个偏移方向
+const int Offset[8][2]={{-1,-1},{-1,0},{-1,1},
+                        {0,1},{0,-1},
+                        {1,-1},{1,0},{1,1}};
 
 #endif // BASICDATA_H

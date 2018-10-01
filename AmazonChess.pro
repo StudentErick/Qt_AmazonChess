@@ -28,13 +28,15 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     drawboard.cpp \
-    gamemessage.cpp
+    gamemessage.cpp \
+    manager.cpp
 
 HEADERS += \
         mainwindow.h \
     drawboard.h \
     utils.h \
-    gamemessage.h
+    gamemessage.h \
+    manager.h
 
 FORMS += \
         mainwindow.ui
