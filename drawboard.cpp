@@ -1,20 +1,25 @@
 #include "drawboard.h"
 #include <QDebug>
+#include <QString>
 
 DrawBoard::DrawBoard(QWidget *parent) : QWidget(parent)
 {
     m_side=EMPTY;      // 走棋的一方，初始化空的
     m_turn=0;          // 应当取棋子
-    //    m_GameMode=PVP;    // 默认人人对弈
     m_checkable=false; // 默认不能点击界面
     // 设置初始化位置
     this->setGeometry(POSW,POSH,BOARD_SIZE,BOARD_SIZE);
 
     // 加载棋盘的图片
     m_board.setParent(this);
-    m_board.setGeometry(0,0,BOARD_SIZE,BOARD_SIZE);
     m_boardPic.load(BOARD_PATH);
     m_boardPic.scaled(BOARD_SIZE,BOARD_SIZE);
+
+    // 加载棋盘的图片
+    m_board.setParent(this);
+    m_boardPic.load(BOARD_PATH);
+    m_boardPic.scaled(BOARD_SIZE,BOARD_SIZE);
+    m_board.setGeometry(0,0,BOARD_SIZE,BOARD_SIZE);
     m_board.setPixmap(m_boardPic);
 
     // 4个黑子和白子
@@ -81,21 +86,34 @@ void DrawBoard::initBoard(){
     drawBoard();
 }
 
-void DrawBoard::makeMove(const ChessMove& chessMove){
+void DrawBoard::makeMove(ChessMove chessMove){
     int side=m_nBoard[chessMove.FromX][chessMove.FromY];
     m_nBoard[chessMove.FromX][chessMove.FromY]=EMPTY;
     m_nBoard[chessMove.ToX][chessMove.ToY]=side;
     m_nBoard[chessMove.BarX][chessMove.BarY]=BARRIER;
     m_side=-chessMove.side;  // 注意取负号
-    drawBoard();  // 重新绘制棋盘
+    drawBoard();             // 重新绘制棋盘
 }
 
-void DrawBoard::retractMove(const ChessMove& chessMove){
-    int side=m_nBoard[chessMove.FromX][chessMove.FromY];
+void DrawBoard::DebugBoard(){
+    QString str;
+    for(int i=0;i<10;++i){
+        for(int j=0;j<10;++j){
+            str+=(QString::number(m_nBoard[i][j],10)+" ");
+        }
+        qDebug()<<str;
+        str.clear();
+    }
+    qDebug()<<"-------------";
+}
+
+void DrawBoard::retractMove(ChessMove chessMove){
+    int side=chessMove.side;
     m_nBoard[chessMove.ToX][chessMove.ToY]=EMPTY;
-    m_nBoard[chessMove.FromX][chessMove.FromY]=side;
     m_nBoard[chessMove.BarX][chessMove.BarY]=EMPTY;
+    m_nBoard[chessMove.FromX][chessMove.FromY]=side;
     m_side=chessMove.side; // 没负号
+ //   DebugBoard();
     drawBoard();  // 重新绘制棋盘
 }
 
@@ -161,8 +179,6 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                 m_nBoard[ix][iy]=BARRIER;
                 drawBoard();
                 m_turn=0;
-                // 这里有Manager进行管理
-                // m_side=-m_side;   // 应该是对面走了///////////////////////////////////////
                 drawBoard();
                 // 获取用户完整的一步走法，并且通过信号发送出去
                 m_chessMove.side=m_side;
@@ -175,7 +191,7 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                 QString str=QString(tr("从位置(%1,%2)移动到(%3,%4)，放置障碍(%5,%6)")).
                         arg(QString::number(m_FromX,10)).arg(QString::number(m_FromY,10))
                         .arg(QString::number(m_ToX,10)).arg(QString::number(m_ToY,10))
-                        .arg(QString::number(m_BarX,10)).arg(QString::number(m_BarX,10));
+                        .arg(QString::number(m_BarX,10)).arg(QString::number(m_BarY,10));
                 emit sendMessage(str);
                 emit sendMove(m_chessMove);  // 发送走棋的数据
             }else{

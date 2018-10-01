@@ -30,9 +30,9 @@ public slots:
     // 设置当前的走子方
     void setSide(int player);
     // 走棋
-    void makeMove(const ChessMove& chessMove);
+    void makeMove(ChessMove chessMove);
     // 悔棋
-    void retractMove(const ChessMove& chessMove);
+    void retractMove(ChessMove chessMove);
     // 设置是否可以点击
     void setCheckable(bool flag);
 
@@ -41,6 +41,8 @@ protected:
     // 重写鼠标点击事件
     void mousePressEvent(QMouseEvent *event) override;
 
+    // 调试棋盘用
+    void DebugBoard();
 private:
     // 共线的判断函数
     bool judgeOnline(int lx,int ly,int x,int y);

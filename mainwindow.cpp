@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // Manager与菜单的关联
     // 开始游戏
     QObject::connect(ui->actionBegin,&QAction::triggered,m_Manager,&Manager::startGame);
+    // 结束本局
+    QObject::connect(ui->actionEndGame,&QAction::triggered,m_Manager,&Manager::initBoard);
     // PVP模式，黑色先走
     QObject::connect(ui->actionBlackFirst,&QAction::triggered,m_Manager,&Manager::PVP_BlackFirst);
     // PVP模式，白色先走
@@ -49,6 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(m_Manager,&Manager::sendCheckable,m_DrawBoard,&DrawBoard::setCheckable);
     // 获取用户的点击状态
     QObject::connect(m_DrawBoard,&DrawBoard::sendMove,m_Manager,&Manager::getMove);
+    // 初始化局面
+    QObject::connect(m_Manager,&Manager::sendInitBoard,m_DrawBoard,&DrawBoard::initBoard);
 
     // 清空信息的关联
     QObject::connect(ui->btnClearMsg,&QPushButton::clicked,m_GameMesage,&GameMessage::clearMessage);

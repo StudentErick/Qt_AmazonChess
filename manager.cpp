@@ -1,19 +1,23 @@
 #include "manager.h"
+#include <QDebug>
 
 Manager::Manager(QObject *parent) : QObject(parent){
-    m_moveItr=m_MoveList.begin();
     initBoard();
+    m_curItr=-1;
     m_GameMode=NoChoice;  // 初始化未选择状态
 }
 
 void Manager::previousMove(){
-    if(m_MoveList.size()<=1){  // 第一步不能在往后走了
+    if(m_MoveList.empty()||m_curItr<0){  // 第一步不能在往后走了
         emit sendMessage(QString(tr("已经是第一步了!")));
         return;
     }
-    --m_moveItr;
-    const auto& m=*m_moveItr;
+
+    auto t=static_cast<std::vector<ChessMove>::size_type>(m_curItr);
+    const auto& m=m_MoveList[t];
+    emit sendMoveMessage(m);   // 向外部发送信息
     emit sendRetractMessage(m);  // 向外部发送信息
+    --m_curItr;
 
     // 局面数据结构的恢复
     m_nBoard[m.FromX][m.FromY]=m.side;
@@ -28,12 +32,13 @@ void Manager::previousMove(){
 }
 
 void Manager::nextMove(){
-    if(m_MoveList.empty()||m_moveItr==m_MoveList.end()-1){
+    if(m_MoveList.empty()||m_curItr==static_cast<int>(m_MoveList.size()-1)){
         emit sendMessage(QString(tr("已经是最后一步了!")));
         return;
     }
-    ++m_moveItr;
-    const auto& m=*m_moveItr;
+    ++m_curItr;
+    auto t=static_cast<std::vector<ChessMove>::size_type>(m_curItr);
+    const auto& m=m_MoveList[t];
     emit sendMoveMessage(m);   // 向外部发送信息
 
     // 局面数据结构的处理
@@ -75,6 +80,13 @@ void Manager::PVPMode(){  // 人人模式不用判断共线，因为点击的时
         emit sendMessage(str);
         emit sendNextSide(EMPTY);
     }
+    // 加入步法之前，需要先清空多余的
+    if(m_curItr!=-1){
+        auto it=m_MoveList.begin()+m_curItr;
+        m_MoveList.erase(it,m_MoveList.end());
+    }
+    m_MoveList.push_back(m);
+    ++m_curItr;
 }
 
 void Manager::PVP_BlackFirst(){
@@ -82,7 +94,6 @@ void Manager::PVP_BlackFirst(){
     QString str=QString(tr("人人对弈模式，黑方先行！"));
     emit sendMessage(str);
     emit sendNextSide(BLACK);  // 向棋盘界面发送消息
-    emit sendCheckable(true);  // 可以点击
 }
 
 void Manager::PVP_WhiteFirst(){
@@ -90,19 +101,16 @@ void Manager::PVP_WhiteFirst(){
     QString str=QString(tr("人人对弈模式，白方先行！"));
     emit sendMessage(str);
     emit sendNextSide(WHITE);
-    emit sendCheckable(true);
 }
 
 void Manager::PVC_CFirst(){
     m_GameMode=PVC;
     emit sendNextSide(WHITE);  // 人机模式，计算机永远是黑子
-    emit sendCheckable(false); // 计算机先走不能点
 }
 
 void Manager::PVC_PFirst(){
     m_GameMode=PVC;
     emit sendNextSide(WHITE);
-    emit sendCheckable(true);  // 人先走可以点
 }
 
 void Manager::initBoard(){
@@ -117,20 +125,27 @@ void Manager::initBoard(){
     m_nBoard[3][0]=BLACK;m_nBoard[3][9]=BLACK;
     m_nBoard[6][0]=WHITE;m_nBoard[6][9]=WHITE;
     m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
+
+    // 初始化队列
+    m_MoveList.erase(m_MoveList.begin(),m_MoveList.end());
+    m_curItr=-1;
+
+    emit sendInitBoard(); // 发射初始化信号
 }
 
 void Manager::startGame(){
     if(m_GameMode==NoChoice){
-        QString str=QString(tr("未选择游戏模式"));
+        QString str=QString(tr("未选择对弈模式！"));
         emit sendMessage(str);
         return;
     }else if(m_GameMode==PVP){
-     //   PVPMode();
         sendCheckable(true);   // 可以点击
+        QString str=QString(tr("对弈开始！"));
+        emit sendMessage(str);
     }else if(m_GameMode==PVC){
-     //   PVCMode();
+
     }else{
-     //   CVCMode();
+
     }
 }
 
@@ -139,12 +154,12 @@ int Manager::JudgeResult(){
     int nBlack=0,nWhite=0;
     for(int i=0;i<10;++i){
         for(int j=0;j<10;++j){
-            if(m_nBoard[i][j]!=EMPTY&&m_nBoard[i][j]!=BARRIER){
+            if(m_nBoard[i][j]==BLACK||m_nBoard[i][j]==WHITE){
                 int n=0;
                 // 8个方向判别
                 for(int k=0;k<8;++k){
                     int a=i+Offset[k][0];
-                    int b=i+Offset[k][1];
+                    int b=j+Offset[k][1];
                     if(a<0||a>9||b<0||b>9||m_nBoard[a][b]!=EMPTY){
                         ++n;
                     }
@@ -204,3 +219,4 @@ bool Manager::judgeOnline(int lx,int ly,int x,int y){
         return false;
     }
 }
+

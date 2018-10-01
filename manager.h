@@ -31,7 +31,6 @@ signals:
     void sendInitBoard();
     // 设计界面是否可以点击
     void sendCheckable(bool flag);
-
 public slots:
     // 前一步
     void previousMove();
@@ -49,9 +48,9 @@ public slots:
     void PVC_CFirst();
     // 人机对弈，人先手
     void PVC_PFirst();
-private:
     // 初始化局面函数
     void initBoard();
+private:
     // 判断共线函数，这里和界面的那个重复了，后期需要改进结构
     bool judgeOnline(int lx,int ly,int x,int y);
     // 人人模式
@@ -70,8 +69,9 @@ private:
     GameMode m_GameMode;
     // 走法队列
     std::vector<ChessMove> m_MoveList;
-    // 走法的迭代器，用于指示当前的步法情况
-    std::vector<ChessMove>::iterator m_moveItr;
+    // 指示当前的走法位置
+    int m_curItr;
+
     // 对弈的棋盘
     int m_nBoard[10][10];
 };
