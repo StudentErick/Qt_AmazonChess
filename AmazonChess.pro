@@ -27,16 +27,19 @@ CONFIG += c++14
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    drawboard.cpp \
-    gamemessage.cpp \
+    AI/aiengine.cpp \
+    GUI/drawboard.cpp \
+    GUI/gamemessage.cpp \
     manager.cpp
 
 HEADERS += \
         mainwindow.h \
-    drawboard.h \
     utils.h \
-    gamemessage.h \
-    manager.h
+    manager.h \
+    AI/aiengine.h \
+    GUI/drawboard.h \
+    GUI/gamemessage.h \
+    utils.h
 
 FORMS += \
         mainwindow.ui

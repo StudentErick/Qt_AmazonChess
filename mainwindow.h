@@ -10,8 +10,8 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QAction>
-#include "drawboard.h"
-#include "gamemessage.h"
+#include "./GUI/drawboard.h"
+#include "./GUI/gamemessage.h"
 #include "manager.h"
 #include "utils.h"
 

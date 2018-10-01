@@ -121,11 +121,6 @@ void Manager::initBoard(){
     m_nBoard[6][0]=WHITE;m_nBoard[6][9]=WHITE;
     m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
 
-    // 初始化队列
-    /*
-    m_MoveList.erase(m_MoveList.begin(),m_MoveList.end());
-    m_curItr=-1;
-    */
     while(!m_newMove.empty()){
         m_newMove.pop();
     }

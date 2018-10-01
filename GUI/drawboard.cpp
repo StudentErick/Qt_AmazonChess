@@ -1,4 +1,4 @@
-#include "drawboard.h"
+#include "./GUI/drawboard.h"
 #include <QDebug>
 #include <QString>
 
