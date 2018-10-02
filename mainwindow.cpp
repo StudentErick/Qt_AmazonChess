@@ -11,6 +11,10 @@ MainWindow::MainWindow(QWidget *parent) :
     m_Manager=new Manager;
     m_AIEngine=new AIEngine;
 
+    // 悔棋和后一步在未开始状态不能用
+    ui->btnNextStep->setEnabled(false);
+    ui->btnPrevStep->setEnabled(false);
+
     // Manager与菜单的关联
     // 开始游戏
     QObject::connect(ui->actionBegin,&QAction::triggered,m_Manager,&Manager::startGame);
@@ -24,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionComputerFirst,&QAction::triggered,m_Manager,&Manager::PVC_CFirst);
     // PVC模式，人先走
     QObject::connect(ui->actionPersonFirst,&QAction::triggered,m_Manager,&Manager::PVC_PFirst);
+    // 开始或结束对弈信号
+    QObject::connect(m_Manager,&Manager::sendOnGame,this,&MainWindow::receiveOnGame);
+
     // 设置AI引擎类型
 
     // Manager与Button的关联
@@ -86,5 +93,22 @@ MainWindow::~MainWindow()
     if(m_AIEngine!=nullptr){
         delete m_AIEngine;
         m_AIEngine=nullptr;
+    }
+}
+
+
+void MainWindow::receiveOnGame(bool flag){
+    if(flag){
+        ui->menuSetting->setEnabled(false);
+        ui->actionOnline->setEnabled(false);
+        ui->actionAI->setEnabled(false);
+        ui->btnNextStep->setEnabled(true);
+        ui->btnPrevStep->setEnabled(true);
+    }else{
+        ui->menuSetting->setEnabled(true);
+        ui->actionOnline->setEnabled(true);
+        ui->actionAI->setEnabled(true);
+        ui->btnNextStep->setEnabled(false);
+        ui->btnPrevStep->setEnabled(false);
     }
 }

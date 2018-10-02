@@ -100,27 +100,27 @@
     <property name="title">
      <string>设置</string>
     </property>
-    <widget class="QMenu" name="menu_4">
+    <widget class="QMenu" name="menuPVPOrder">
      <property name="title">
       <string>人人模式</string>
      </property>
      <addaction name="actionBlackFirst"/>
      <addaction name="actionWhiteFirst"/>
     </widget>
-    <widget class="QMenu" name="menu_5">
+    <widget class="QMenu" name="menuPVCOrder">
      <property name="title">
       <string>人机模式</string>
      </property>
      <addaction name="actionPersonFirst"/>
      <addaction name="actionComputerFirst"/>
     </widget>
-    <addaction name="menu_4"/>
-    <addaction name="menu_5"/>
+    <addaction name="menuPVPOrder"/>
+    <addaction name="menuPVCOrder"/>
     <addaction name="actionOnline"/>
     <addaction name="separator"/>
     <addaction name="actionAI"/>
    </widget>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menuInfo">
     <property name="title">
      <string>关于</string>
     </property>
@@ -129,7 +129,7 @@
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuSetting"/>
-   <addaction name="menu"/>
+   <addaction name="menuInfo"/>
   </widget>
   <action name="actionBegin">
    <property name="text">

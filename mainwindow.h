@@ -27,7 +27,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+public slots:
+    void receiveOnGame(bool flag);
 private:
     Ui::MainWindow *ui;
     DrawBoard* m_DrawBoard;    // 绘制棋盘

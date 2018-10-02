@@ -175,6 +175,7 @@ void Manager::initBoard(){
         m_pastMove.pop();
     }
     emit sendInitBoard(); // 发射初始化信号
+    emit sendOnGame(false);  // 发射结束信号
 }
 
 void Manager::startGame(){
@@ -203,6 +204,7 @@ void Manager::startGame(){
     }else{
 
     }
+    emit sendOnGame(true);  // 开始对弈
 }
 
 void Manager::getEngineNumber(int num){

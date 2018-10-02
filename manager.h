@@ -38,6 +38,8 @@ signals:
     void sendCheckable(bool flag);
     // 发送引擎编号
     void sendEngineNumber(int num);
+    // 发送对弈信号，如果是对弈进行中，那么除了结束之外，所有的选项都不能用
+    void sendOnGame(bool flag);
 public slots:
     // 前一步
     void previousMove();
