@@ -24,7 +24,9 @@ public slots:
     void getMove(ChessMove move);
 
 protected:
+    // 引擎编号
     int m_EngineNum;
+    // 获取当前一个移动
     ChessMove m_getMove;
 };
 

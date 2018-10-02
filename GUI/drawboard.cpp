@@ -1,4 +1,4 @@
-#include "./GUI/drawboard.h"
+#include "drawboard.h"
 #include <QDebug>
 #include <QString>
 
@@ -166,7 +166,7 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                         .arg(QString::number(m_ToX,10)).arg(QString::number(m_ToY,10))
                         .arg(QString::number(m_BarX,10)).arg(QString::number(m_BarY,10));
                 emit sendMessage(str);
-                emit sendMove(m_chessMove);  // 发送走棋的数据
+                emit sendMove(m_chessMove);
             }else{
                 QString str(tr("放置障碍的方式非法！"));
                 emit sendMessage(str);

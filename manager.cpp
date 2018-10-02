@@ -16,8 +16,10 @@ void Manager::previousMove(){
     m_newMove.pop();
     m_pastMove.push(m);  // 悔棋的放到第二个栈中
 
-    emit sendMoveMessage(m);   // 向外部发送信息
-    emit sendRetractMessage(m);  // 向外部发送信息
+    if(m_GameMode==PVP){
+        emit sendMoveMsgToBoard(m); // 向界面发送即可
+    }
+    emit sendRetractMessage(m);     // 向外部发送信息
 
     // 局面数据结构的恢复
     m_nBoard[m.FromX][m.FromY]=m.side;
@@ -40,7 +42,10 @@ void Manager::nextMove(){
     m_pastMove.pop();
     m_newMove.push(m);  // 放到之前的栈中
 
-    emit sendMoveMessage(m);   // 向外部发送信息
+    if(m_GameMode==PVP){
+        emit sendMoveMsgToBoard(m); // 向界面发送即可
+    }
+
 
     // 局面数据结构的处理
     m_nBoard[m.FromX][m.FromY]=EMPTY;
@@ -60,10 +65,13 @@ void Manager::getMove(ChessMove move){
         return;
     }else if(m_GameMode==PVP){
         PVPMode();
+    }else if(m_GameMode==PVC){
+        PVCMode();
     }
 }
 
-void Manager::PVPMode(){  // 人人模式不用判断共线，因为点击的时候就确认了
+void Manager::PVPMode(){
+    // 人人模式不用判断共线，因为点击的时候就确认了
     const auto& m=m_getMove;
     // 移动棋子
     m_nBoard[m.FromX][m.FromY]=EMPTY;
@@ -84,28 +92,67 @@ void Manager::PVPMode(){  // 人人模式不用判断共线，因为点击的时
     m_newMove.push(m);
 }
 
+void Manager::PVCMode(){
+    // 人机模式也不用判断共线
+    const auto& m=m_getMove;
+    // 移动棋子
+    m_nBoard[m.FromX][m.FromY]=EMPTY;
+    m_nBoard[m.ToX][m.ToY]=m.side;
+    m_nBoard[m.BarX][m.BarY]=BARRIER;
+    int res=JudgeResult();
+    if(res==EMPTY){
+        if(m.side==BLACK){  // 计算机发来了消息
+            emit sendMoveMsgToBoard(m);  // 让界面显示移动的消息
+            emit sendNextSide(WHITE);    // 向人发送下一步走子的一方
+            emit sendCheckable(true);    // 轮到人走了，点击棋盘
+        }else if(m.side==WHITE){  // 人发来了消息，以下相反
+            emit sendMoveMsgToAI(m);     // 给AI计算
+            emit sendNextSide(BLACK);
+            emit sendCheckable(false);
+        }
+    }else if(res==BLACK){
+        QString str=QString(tr("计算机获胜！"));
+        emit sendMessage(str);
+        emit sendNextSide(EMPTY);
+    }else{
+        QString str=QString(tr("人获胜！"));
+        emit sendMessage(str);
+        emit sendNextSide(EMPTY);
+    }
+}
+
 void Manager::PVP_BlackFirst(){
     m_GameMode=PVP;
+    m_side=BLACK;
     QString str=QString(tr("人人对弈模式，黑方先行！"));
     emit sendMessage(str);
-    emit sendNextSide(BLACK);  // 向棋盘界面发送消息
+    emit sendNextSide(m_side);  // 向棋盘界面发送消息
 }
 
 void Manager::PVP_WhiteFirst(){
     m_GameMode=PVP;
+    m_side=WHITE;
     QString str=QString(tr("人人对弈模式，白方先行！"));
     emit sendMessage(str);
-    emit sendNextSide(WHITE);
+    emit sendNextSide(m_side);
 }
 
 void Manager::PVC_CFirst(){
     m_GameMode=PVC;
-    emit sendNextSide(WHITE);  // 人机模式，计算机永远是黑子
+    m_side=BLACK;
+    QString str=QString(tr("人机对弈模式，计算机先行！"));
+    emit sendMessage(str);
+    emit sendNextSide(m_side);  // 人机模式，计算机永远是黑子
+    emit sendCheckable(false); // 不能点击棋盘操作
 }
 
 void Manager::PVC_PFirst(){
     m_GameMode=PVC;
-    emit sendNextSide(WHITE);
+    m_side=WHITE;
+    QString str=QString(tr("人人对弈模式，人先行！"));
+    emit sendMessage(str);
+    emit sendNextSide(m_side);  // 人机模式，计算机永远是黑子
+    emit sendCheckable(true);  // 可以点击棋盘
 }
 
 void Manager::initBoard(){
@@ -140,10 +187,27 @@ void Manager::startGame(){
         QString str=QString(tr("对弈开始！"));
         emit sendMessage(str);
     }else if(m_GameMode==PVC){
-
+        if(m_side==BLACK){
+            sendCheckable(false);
+            ChessMove mv;
+            // 计算机第一步走子标记
+            mv.side=COMPUTER_FIRST_STEP;
+            sendMoveMsgToAI(mv);
+            QString str=QString(tr("对弈开始！计算机先行"));
+            emit sendMessage(str);
+        }else{
+            sendCheckable(true);
+            QString str=QString(tr("对弈开始！人先行"));
+            emit sendMessage(str);
+        }
     }else{
 
     }
+}
+
+void Manager::getEngineNumber(int num){
+    m_EngineNumber=num;
+    emit sendEngineNumber(num);  // 获取后立刻转发s
 }
 
 int Manager::JudgeResult(){

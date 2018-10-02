@@ -7,10 +7,11 @@
 * 下面是棋子基本的数据结构
 * Erick Lv 09/30/2018
 */
-const int BLACK=1;
-const int WHITE=-1;
-const int BARRIER=2;
-const int EMPTY=0;
+const int BLACK=1;    // 黑子
+const int WHITE=-1;   // 白子
+const int BARRIER=2;  // 障碍
+const int EMPTY=0;    // 空
+const int COMPUTER_FIRST_STEP=-2;  // 计算机第一次走子的策略
 
 // 初始化棋盘位置坐标
 const int POSW=30;

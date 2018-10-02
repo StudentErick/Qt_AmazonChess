@@ -1,4 +1,4 @@
-#include "./AI/aiengine.h"
+#include "aiengine.h"
 
 AIEngine::AIEngine(QObject *parent) : QObject(parent)
 {

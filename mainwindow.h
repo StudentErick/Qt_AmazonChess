@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QAction>
+#include "./AI/aiengine.h"
 #include "./GUI/drawboard.h"
 #include "./GUI/gamemessage.h"
 #include "manager.h"
@@ -29,9 +30,10 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    DrawBoard* m_DrawBoard;
-    GameMessage* m_GameMesage;
-    Manager* m_Manager;
+    DrawBoard* m_DrawBoard;    // 绘制棋盘
+    GameMessage* m_GameMesage; // 显示对弈信息
+    Manager* m_Manager;        // 逻辑控制
+    AIEngine* m_AIEngine;      // AI引擎
 };
 
 #endif // MAINWINDOW_H

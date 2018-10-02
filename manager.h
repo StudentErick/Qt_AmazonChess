@@ -22,8 +22,12 @@ public:
 signals:
     // 发送显示消息数据
     void sendMessage(QString str);
-    // 发送走子的数据
-    void sendMoveMessage(ChessMove move);
+    // 发送走子的数据，给界面
+    void sendMoveMsgToBoard(ChessMove move);
+    // 发送走子的数据，给AI
+    void sendMoveMsgToAI(ChessMove move);
+    // 发送走子的数据，给网络用户
+    void sendMoveMsgToNet(ChessMove move);
     // 发送悔棋数据
     void sendRetractMessage(ChessMove move);
     // 发送下一步走子的一方，如果side是EMPTY，说明结束了
@@ -32,6 +36,8 @@ signals:
     void sendInitBoard();
     // 设计界面是否可以点击
     void sendCheckable(bool flag);
+    // 发送引擎编号
+    void sendEngineNumber(int num);
 public slots:
     // 前一步
     void previousMove();
@@ -51,18 +57,22 @@ public slots:
     void PVC_PFirst();
     // 初始化局面函数
     void initBoard();
+    // 获取引擎的类型
+    void getEngineNumber(int num);
 private:
     // 判断共线函数，这里和界面的那个重复了，后期需要改进结构
     bool judgeOnline(int lx,int ly,int x,int y);
     // 人人模式
     void PVPMode();
     // 人机模式
-    void PVCMode()=delete;
+    void PVCMode();
     // 联机模式
     void CVCMode()=delete;
 
     // 判断胜负，返回获胜一方的颜色
     int JudgeResult();
+
+    int m_side;   // 判断第一步应该是哪一方走
 
     // 获取的步法
     ChessMove m_getMove;
@@ -75,6 +85,9 @@ private:
 
     // 对弈的棋盘
     int m_nBoard[10][10];
+
+    // AI引擎的类型
+    int m_EngineNumber;
 };
 
 #endif // MANAGER_H

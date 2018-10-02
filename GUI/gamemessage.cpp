@@ -1,4 +1,4 @@
-#include "./GUI/gamemessage.h"
+#include "gamemessage.h"
 
 GameMessage::GameMessage(QWidget* parent):QTextBrowser (parent)
 {

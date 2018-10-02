@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_DrawBoard=new DrawBoard(ui->centralWidget);
     m_GameMesage=new GameMessage(ui->centralWidget);
     m_Manager=new Manager;
+    m_AIEngine=new AIEngine;
 
     // Manager与菜单的关联
     // 开始游戏
@@ -23,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionComputerFirst,&QAction::triggered,m_Manager,&Manager::PVC_CFirst);
     // PVC模式，人先走
     QObject::connect(ui->actionPersonFirst,&QAction::triggered,m_Manager,&Manager::PVC_PFirst);
+    // 设置AI引擎类型
 
     // Manager与Button的关联
     // 向前走一步，悔棋
@@ -40,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Manager与DrawBoard的关联
     // 关联走子
-    QObject::connect(m_Manager,&Manager::sendMoveMessage,m_DrawBoard,&DrawBoard::makeMove);
+    QObject::connect(m_Manager,&Manager::sendMoveMsgToBoard,m_DrawBoard,&DrawBoard::makeMove);
     // 关联悔棋
     QObject::connect(m_Manager,&Manager::sendRetractMessage,m_DrawBoard,&DrawBoard::retractMove);
     // 关联更改走子方
@@ -56,6 +58,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // 清空信息的关联
     QObject::connect(ui->btnClearMsg,&QPushButton::clicked,m_GameMesage,&GameMessage::clearMessage);
+
+    // Manager与AIEngine的关联
+    // 获取引擎编号
+    QObject::connect(m_Manager,&Manager::sendEngineNumber,m_AIEngine,&AIEngine::getEngineNumber);
+    // 发送走子的数据
+    QObject::connect(m_Manager,&Manager::sendMoveMsgToAI,m_AIEngine,&AIEngine::getMove);
+    // 获取AI的走法
+    QObject::connect(m_AIEngine,&AIEngine::sendResult,m_Manager,&Manager::getMove);
 }
 
 MainWindow::~MainWindow()
@@ -72,5 +82,9 @@ MainWindow::~MainWindow()
     if(m_Manager!=nullptr){
         delete m_Manager;
         m_Manager=nullptr;
+    }
+    if(m_AIEngine!=nullptr){
+        delete m_AIEngine;
+        m_AIEngine=nullptr;
     }
 }
