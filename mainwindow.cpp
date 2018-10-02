@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -73,6 +74,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(m_Manager,&Manager::sendMoveMsgToAI,m_AIEngine,&AIEngine::getMove);
     // 获取AI的走法
     QObject::connect(m_AIEngine,&AIEngine::sendResult,m_Manager,&Manager::getMove);
+
+    // 关于软件
+    QObject::connect(ui->actionAboutThis,&QAction::triggered,this,&MainWindow::showAboutSoftware);
+    // 关于作者
+    QObject::connect(ui->actionAboutAuthor,&QAction::triggered,this,&MainWindow::showAboutAuthor);
 }
 
 MainWindow::~MainWindow()
@@ -104,11 +110,31 @@ void MainWindow::receiveOnGame(bool flag){
         ui->actionAI->setEnabled(false);
         ui->btnNextStep->setEnabled(true);
         ui->btnPrevStep->setEnabled(true);
+        ui->actionAboutThis->setEnabled(false);
+        ui->actionAboutAuthor->setEnabled(false);
     }else{
         ui->menuSetting->setEnabled(true);
         ui->actionOnline->setEnabled(true);
         ui->actionAI->setEnabled(true);
         ui->btnNextStep->setEnabled(false);
         ui->btnPrevStep->setEnabled(false);
+        ui->actionAboutThis->setEnabled(true);
+        ui->actionAboutAuthor->setEnabled(true);
     }
+}
+
+void MainWindow::showAboutSoftware(){
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(tr("关于Amazon软件"));
+    msgBox.setText(tr("该软件由Erick Lv制作<br>Github地址:<br>https://github.com/StudentErick/Qt_AmazonChess<br>"));
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.exec();
+}
+
+void MainWindow::showAboutAuthor(){
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(tr("关于作者"));
+    msgBox.setText(tr("作者：Erick Lv<br>邮箱地址:<br>Erick_Lv@outlook.com"));
+    msgBox.setIcon(QMessageBox::Information);
+    msgBox.exec();
 }

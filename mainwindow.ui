@@ -122,9 +122,9 @@
    </widget>
    <widget class="QMenu" name="menuInfo">
     <property name="title">
-     <string>关于</string>
+     <string>帮助</string>
     </property>
-    <addaction name="actionHelp"/>
+    <addaction name="actionAboutThis"/>
     <addaction name="actionAboutAuthor"/>
    </widget>
    <addaction name="menuGame"/>
@@ -161,9 +161,9 @@
     <string>联网模式</string>
    </property>
   </action>
-  <action name="actionHelp">
+  <action name="actionAboutThis">
    <property name="text">
-    <string>帮助</string>
+    <string>关于软件</string>
    </property>
   </action>
   <action name="actionAboutAuthor">

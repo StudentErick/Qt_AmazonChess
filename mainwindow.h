@@ -28,7 +28,12 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
+    // 接收是否正在对弈的信息
     void receiveOnGame(bool flag);
+    // 显示信息
+    void showAboutSoftware();
+    // 显示作者
+    void showAboutAuthor();
 private:
     Ui::MainWindow *ui;
     DrawBoard* m_DrawBoard;    // 绘制棋盘
