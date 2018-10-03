@@ -1,7 +1,7 @@
 #include "aiengine.h"
 #include "testengine.h"
 
-AIEngine::AIEngine(QObject *parent) : QObject(parent)
+AIEngine::AIEngine()
 {
     m_basciEngine=nullptr;
 }
@@ -34,6 +34,10 @@ void AIEngine::getEngineNumber(int num){
 
 void AIEngine::getMove(ChessMove chessmove){
     m_getMove=chessmove;  // 获取步法
-    auto m=m_basciEngine->getBestMove(chessmove);
+    run();   // 在这里进行运算
+}
+
+void AIEngine::run(){
+    auto m=m_basciEngine->getBestMove(m_getMove);
     emit sendResult(m);         // 发送搜索结果
 }

@@ -43,7 +43,7 @@ void Manager::nextMove(){
     m_pastMove.pop();
     m_newMove.push(m);  // 放到之前的栈中
 
-    if(m_GameMode==PVP){
+    if(m_GameMode==PVP||m_GameMode==PVC){
         emit sendMoveMsgToBoard(m); // 向界面发送即可
     }
 
@@ -101,6 +101,8 @@ void Manager::PVCMode(){
     m_nBoard[m.ToX][m.ToY]=m.side;
     m_nBoard[m.BarX][m.BarY]=BARRIER;
 
+    m_newMove.push(m);  // 添加到步法队列
+
     int res=JudgeResult();  // 判别是否分出胜负
     if(res==EMPTY){
         if(m.side==BLACK){  // 收到AI发来的步法
@@ -118,10 +120,12 @@ void Manager::PVCMode(){
             emit sendMoveMsgToAI(m);     // 给AI计算
         }
     }else if(res==BLACK){
+        emit sendMoveMsgToBoard(m);  // 通知界面进行移动
         QString str=QString(tr("计算机获胜！"));
         emit sendMessage(str);
         emit sendNextSide(EMPTY);
     }else{
+        emit sendMoveMsgToBoard(m);  // 通知界面进行移动
         QString str=QString(tr("人获胜！"));
         emit sendMessage(str);
         emit sendNextSide(EMPTY);

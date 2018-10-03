@@ -1,7 +1,7 @@
 #ifndef AIENGINE_H
 #define AIENGINE_H
 
-#include <QObject>
+#include <QThread>
 #include "utils.h"
 #include "basicengine.h"
 
@@ -9,12 +9,12 @@
 * AI引擎，这里可以加载不同类型的AI引擎
 */
 
-class AIEngine : public QObject
+class AIEngine : public QThread
 {
     Q_OBJECT
 public:
-    explicit AIEngine(QObject *parent = nullptr);
-    ~AIEngine();
+    AIEngine();
+    virtual ~AIEngine();
 
 signals:
     // 发送计算的结果
@@ -24,6 +24,8 @@ public slots:
     void getEngineNumber(int num);
     // 获取步法开始计算
     void getMove(ChessMove move);
+    // 启动计算线程进行运算
+    void run();
 
 protected:
     // 搜索引擎
