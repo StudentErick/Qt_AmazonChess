@@ -54,7 +54,7 @@ void DrawBoard::initBoard(){
     m_nBoard[0][3]=BLACK;m_nBoard[0][6]=BLACK;
     m_nBoard[3][0]=BLACK;m_nBoard[3][9]=BLACK;
     m_nBoard[6][0]=WHITE;m_nBoard[6][9]=WHITE;
-    m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
+    m_nBoard[9][3]=WHITE;m_nBoard[9][6]=WHITE;
     // 绘制棋盘
     drawBoard();
 }
@@ -64,7 +64,7 @@ void DrawBoard::makeMove(ChessMove chessMove){
     m_nBoard[chessMove.FromX][chessMove.FromY]=EMPTY;
     m_nBoard[chessMove.ToX][chessMove.ToY]=side;
     m_nBoard[chessMove.BarX][chessMove.BarY]=BARRIER;
-    m_side=-chessMove.side;  // 注意取负号
+
     drawBoard();             // 重新绘制棋盘
 }
 
@@ -77,7 +77,6 @@ void DrawBoard::DebugBoard(){
         qDebug()<<str;
         str.clear();
     }
-    qDebug()<<"-------------";
 }
 
 void DrawBoard::retractMove(ChessMove chessMove){
@@ -86,7 +85,6 @@ void DrawBoard::retractMove(ChessMove chessMove){
     m_nBoard[chessMove.BarX][chessMove.BarY]=EMPTY;
     m_nBoard[chessMove.FromX][chessMove.FromY]=side;
     m_side=chessMove.side; // 没负号
- //   DebugBoard();
     drawBoard();  // 重新绘制棋盘
 }
 
@@ -153,6 +151,10 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                 drawBoard();
                 m_turn=0;
                 drawBoard();
+
+                // qDebug()<<"After Draw Board Man choose";
+                // DebugBoard();  //调试输出结果/////////////////////////////////////////////////////////////////////////////////////
+
                 // 获取用户完整的一步走法，并且通过信号发送出去
                 m_chessMove.side=m_side;
                 m_chessMove.FromX=m_FromX;
@@ -166,7 +168,7 @@ void DrawBoard::mousePressEvent(QMouseEvent *event){
                         .arg(QString::number(m_ToX,10)).arg(QString::number(m_ToY,10))
                         .arg(QString::number(m_BarX,10)).arg(QString::number(m_BarY,10));
                 emit sendMessage(str);
-                emit sendMove(m_chessMove);
+                emit sendMove(m_chessMove);  // 发送正确的步法
             }else{
                 QString str(tr("放置障碍的方式非法！"));
                 emit sendMessage(str);

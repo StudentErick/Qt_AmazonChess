@@ -30,7 +30,10 @@ SOURCES += \
     AI/aiengine.cpp \
     GUI/drawboard.cpp \
     GUI/gamemessage.cpp \
-    manager.cpp
+    manager.cpp \
+    AI/basicengine.cpp \
+    AI/testengine.cpp \
+    AI/movegenerator.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -39,7 +42,10 @@ HEADERS += \
     AI/aiengine.h \
     GUI/drawboard.h \
     GUI/gamemessage.h \
-    utils.h
+    utils.h \
+    AI/basicengine.h \
+    AI/testengine.h \
+    AI/movegenerator.h
 
 FORMS += \
         mainwindow.ui

@@ -86,7 +86,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>28</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -114,11 +114,17 @@
      <addaction name="actionPersonFirst"/>
      <addaction name="actionComputerFirst"/>
     </widget>
+    <widget class="QMenu" name="menuAI">
+     <property name="title">
+      <string>AI引擎选择</string>
+     </property>
+     <addaction name="actionTestEngine"/>
+    </widget>
     <addaction name="menuPVPOrder"/>
     <addaction name="menuPVCOrder"/>
     <addaction name="actionOnline"/>
     <addaction name="separator"/>
-    <addaction name="actionAI"/>
+    <addaction name="menuAI"/>
    </widget>
    <widget class="QMenu" name="menuInfo">
     <property name="title">
@@ -171,14 +177,14 @@
     <string>关于作者</string>
    </property>
   </action>
-  <action name="actionAI">
-   <property name="text">
-    <string>AI引擎设置</string>
-   </property>
-  </action>
   <action name="actionBlackFirst">
    <property name="text">
     <string>黑方先手</string>
+   </property>
+  </action>
+  <action name="actionTestEngine">
+   <property name="text">
+    <string>TestEngine</string>
    </property>
   </action>
  </widget>

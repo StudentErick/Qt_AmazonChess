@@ -59,8 +59,12 @@ public slots:
     void PVC_PFirst();
     // 初始化局面函数
     void initBoard();
-    // 获取引擎的类型
-    void getEngineNumber(int num);
+    // 获取测试引擎
+    void getTestEngine();
+
+    // 调试棋盘用
+    void DebugBoard();
+
 private:
     // 判断共线函数，这里和界面的那个重复了，后期需要改进结构
     bool judgeOnline(int lx,int ly,int x,int y);

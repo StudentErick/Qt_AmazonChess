@@ -4,6 +4,7 @@
 Manager::Manager(QObject *parent) : QObject(parent){
     initBoard();
     m_GameMode=NoChoice;  // 初始化未选择状态
+    m_EngineNumber=0;
 }
 
 void Manager::previousMove(){
@@ -99,16 +100,22 @@ void Manager::PVCMode(){
     m_nBoard[m.FromX][m.FromY]=EMPTY;
     m_nBoard[m.ToX][m.ToY]=m.side;
     m_nBoard[m.BarX][m.BarY]=BARRIER;
-    int res=JudgeResult();
+
+    int res=JudgeResult();  // 判别是否分出胜负
     if(res==EMPTY){
-        if(m.side==BLACK){  // 计算机发来了消息
-            emit sendMoveMsgToBoard(m);  // 让界面显示移动的消息
-            emit sendNextSide(WHITE);    // 向人发送下一步走子的一方
-            emit sendCheckable(true);    // 轮到人走了，点击棋盘
-        }else if(m.side==WHITE){  // 人发来了消息，以下相反
+        if(m.side==BLACK){  // 收到AI发来的步法
+            emit sendMoveMsgToBoard(m);  // 通知界面进行移动
+            emit sendNextSide(WHITE);         // 通知界面轮到白子走
+            emit sendCheckable(true);          // 通知界面可以进行点击
+            QString str=QString(tr("计算机从位置(%1,%2)移动到(%3,%4)，放置障碍(%5,%6)")).
+                    arg(QString::number(m.FromX,10)).arg(QString::number(m.FromY,10))
+                    .arg(QString::number(m.ToX,10)).arg(QString::number(m.ToY,10))
+                    .arg(QString::number(m.BarX,10)).arg(QString::number(m.BarY,10));
+            emit sendMessage(str);
+        }else if(m.side==WHITE){  // 收到人发来的步法
+            emit sendNextSide(BLACK);     // 轮到黑方走
+            emit sendCheckable(false);      // AI 计算时不能点击
             emit sendMoveMsgToAI(m);     // 给AI计算
-            emit sendNextSide(BLACK);
-            emit sendCheckable(false);
         }
     }else if(res==BLACK){
         QString str=QString(tr("计算机获胜！"));
@@ -138,19 +145,29 @@ void Manager::PVP_WhiteFirst(){
 }
 
 void Manager::PVC_CFirst(){
+    if(m_EngineNumber==0){
+        QString str=QString(tr("请先选择引擎！"));
+        emit sendMessage(str);
+        return;
+    }
     m_GameMode=PVC;
-    m_side=BLACK;
     QString str=QString(tr("人机对弈模式，计算机先行！"));
     emit sendMessage(str);
+    m_side=BLACK;
     emit sendNextSide(m_side);  // 人机模式，计算机永远是黑子
     emit sendCheckable(false); // 不能点击棋盘操作
 }
 
 void Manager::PVC_PFirst(){
+    if(m_EngineNumber==0){
+        QString str=QString(tr("请先选择引擎！"));
+        emit sendMessage(str);
+        return;
+    }
     m_GameMode=PVC;
-    m_side=WHITE;
-    QString str=QString(tr("人人对弈模式，人先行！"));
+    QString str=QString(tr("人机对弈模式，人先行！"));
     emit sendMessage(str);
+    m_side=WHITE;
     emit sendNextSide(m_side);  // 人机模式，计算机永远是黑子
     emit sendCheckable(true);  // 可以点击棋盘
 }
@@ -166,7 +183,7 @@ void Manager::initBoard(){
     m_nBoard[0][3]=BLACK;m_nBoard[0][6]=BLACK;
     m_nBoard[3][0]=BLACK;m_nBoard[3][9]=BLACK;
     m_nBoard[6][0]=WHITE;m_nBoard[6][9]=WHITE;
-    m_nBoard[9][3]=WHITE;m_nBoard[9][7]=WHITE;
+    m_nBoard[9][3]=WHITE;m_nBoard[9][6]=WHITE;
 
     while(!m_newMove.empty()){
         m_newMove.pop();
@@ -176,6 +193,9 @@ void Manager::initBoard(){
     }
     emit sendInitBoard(); // 发射初始化信号
     emit sendOnGame(false);  // 发射结束信号
+    m_EngineNumber=0;  // 引擎重置
+    QString  str=QString(tr("本局结束！"));
+    emit sendMessage(str);
 }
 
 void Manager::startGame(){
@@ -193,9 +213,9 @@ void Manager::startGame(){
             ChessMove mv;
             // 计算机第一步走子标记
             mv.side=COMPUTER_FIRST_STEP;
-            sendMoveMsgToAI(mv);
             QString str=QString(tr("对弈开始！计算机先行"));
             emit sendMessage(str);
+            sendMoveMsgToAI(mv);
         }else{
             sendCheckable(true);
             QString str=QString(tr("对弈开始！人先行"));
@@ -207,9 +227,11 @@ void Manager::startGame(){
     emit sendOnGame(true);  // 开始对弈
 }
 
-void Manager::getEngineNumber(int num){
-    m_EngineNumber=num;
-    emit sendEngineNumber(num);  // 获取后立刻转发s
+void Manager::getTestEngine(){
+    m_EngineNumber=1;
+    emit sendEngineNumber(m_EngineNumber);
+    QString str=QString(tr("选中测试引擎！"));
+    emit sendMessage(str);
 }
 
 int Manager::JudgeResult(){
@@ -280,6 +302,17 @@ bool Manager::judgeOnline(int lx,int ly,int x,int y){
         return true;
     }else{
         return false;
+    }
+}
+
+void Manager::DebugBoard(){
+    QString str;
+    for(int i=0;i<10;++i){
+        for(int j=0;j<10;++j){
+            str+=(QString::number(m_nBoard[i][j],10)+" ");
+        }
+        qDebug()<<str;
+        str.clear();
     }
 }
 

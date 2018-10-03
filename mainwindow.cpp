@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // 初始化所有的模块类
     m_DrawBoard=new DrawBoard(ui->centralWidget);
     m_GameMesage=new GameMessage(ui->centralWidget);
     m_Manager=new Manager;
@@ -16,7 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->btnNextStep->setEnabled(false);
     ui->btnPrevStep->setEnabled(false);
 
-    // Manager与菜单的关联
+
+    /***********************
+    * Manager与菜单的关联 *
+    ***********************/
     // 开始游戏
     QObject::connect(ui->actionBegin,&QAction::triggered,m_Manager,&Manager::startGame);
     // 结束本局
@@ -31,24 +36,35 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionPersonFirst,&QAction::triggered,m_Manager,&Manager::PVC_PFirst);
     // 开始或结束对弈信号
     QObject::connect(m_Manager,&Manager::sendOnGame,this,&MainWindow::receiveOnGame);
+    // 获取TestEngine
+    QObject::connect(ui->actionTestEngine,&QAction::triggered,m_Manager,&Manager::getTestEngine);
 
-    // 设置AI引擎类型
 
-    // Manager与Button的关联
+    /**************************
+    * Manager与Button的关联 *
+    **************************/
     // 向前走一步，悔棋
     QObject::connect(ui->btnPrevStep,&QPushButton::clicked,m_Manager,&Manager::previousMove);
     // 向后走一步
     QObject::connect(ui->btnNextStep,&QPushButton::clicked,m_Manager,&Manager::nextMove);
 
-    // DrawBoard与GameMessage的关联
+
+    /***********************************
+     *  Manager与GameMessage的关联 *
+     * **********************************/
+    QObject::connect(m_Manager,&Manager::sendMessage,m_GameMesage,&GameMessage::receiveMessage);
+
+
+    /************************************
+    * DrawBoard与GameMessage的关联 *
+    *************************************/
     // 关联发送消息
     QObject::connect(m_DrawBoard,&DrawBoard::sendMessage,m_GameMesage,&GameMessage::receiveMessage);
 
-    // Manager与GameMessage的关联
-    // 关联发送消息
-    QObject::connect(m_Manager,&Manager::sendMessage,m_GameMesage,&GameMessage::receiveMessage);
 
-    // Manager与DrawBoard的关联
+    /******************************
+    * Manager与DrawBoard的关联 *
+    *******************************/
     // 关联走子
     QObject::connect(m_Manager,&Manager::sendMoveMsgToBoard,m_DrawBoard,&DrawBoard::makeMove);
     // 关联悔棋
@@ -64,17 +80,28 @@ MainWindow::MainWindow(QWidget *parent) :
     // 初始化局面
     QObject::connect(m_Manager,&Manager::sendInitBoard,m_DrawBoard,&DrawBoard::initBoard);
 
+
+    /*********************
+     * 按键与桌面控件关联 *
+     * ********************/
     // 清空信息的关联
     QObject::connect(ui->btnClearMsg,&QPushButton::clicked,m_GameMesage,&GameMessage::clearMessage);
 
-    // Manager与AIEngine的关联
-    // 获取引擎编号
-    QObject::connect(m_Manager,&Manager::sendEngineNumber,m_AIEngine,&AIEngine::getEngineNumber);
+
+    /****************************
+    * Manager与AIEngine的关联 *
+    ****************************/
     // 发送走子的数据
     QObject::connect(m_Manager,&Manager::sendMoveMsgToAI,m_AIEngine,&AIEngine::getMove);
     // 获取AI的走法
     QObject::connect(m_AIEngine,&AIEngine::sendResult,m_Manager,&Manager::getMove);
+    // 发送测试引擎的编号
+    QObject::connect(m_Manager,&Manager::sendEngineNumber,m_AIEngine,&AIEngine::getEngineNumber);
 
+
+    /***************
+    * 软件信息弹窗 *
+    ***************/
     // 关于软件
     QObject::connect(ui->actionAboutThis,&QAction::triggered,this,&MainWindow::showAboutSoftware);
     // 关于作者
@@ -107,17 +134,23 @@ void MainWindow::receiveOnGame(bool flag){
     if(flag){
         ui->menuSetting->setEnabled(false);
         ui->actionOnline->setEnabled(false);
-        ui->actionAI->setEnabled(false);
+
+        ui->actionTestEngine->setEnabled(false);
+
         ui->btnNextStep->setEnabled(true);
         ui->btnPrevStep->setEnabled(true);
+
         ui->actionAboutThis->setEnabled(false);
         ui->actionAboutAuthor->setEnabled(false);
     }else{
         ui->menuSetting->setEnabled(true);
         ui->actionOnline->setEnabled(true);
-        ui->actionAI->setEnabled(true);
+
+        ui->actionTestEngine->setEnabled(true);
+
         ui->btnNextStep->setEnabled(false);
         ui->btnPrevStep->setEnabled(false);
+
         ui->actionAboutThis->setEnabled(true);
         ui->actionAboutAuthor->setEnabled(true);
     }
