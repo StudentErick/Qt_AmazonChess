@@ -43,3 +43,37 @@ void BasicEngine::DebugBoard(){
         str.clear();
     }
 }
+
+int BasicEngine::JudgeResult(){
+    // 双方被困住的棋子的个数
+    int nBlack=0,nWhite=0;
+    for(int i=0;i<10;++i){
+        for(int j=0;j<10;++j){
+            if(m_nBoard[i][j]==BLACK||m_nBoard[i][j]==WHITE){
+                int n=0;
+                // 8个方向判别
+                for(int k=0;k<8;++k){
+                    int a=i+Offset[k][0];
+                    int b=j+Offset[k][1];
+                    if(a<0||a>9||b<0||b>9||m_nBoard[a][b]!=EMPTY){
+                        ++n;
+                    }
+                }
+                if(n>=8){  // 8个方向都堵死了
+                    if(m_nBoard[i][j]==BLACK){
+                        ++nBlack;
+                    }else{
+                        ++nWhite;
+                    }
+                }
+            }
+        }
+    }
+    if(nBlack>=4){
+        return WHITE;
+    }else if(nWhite>=4){
+        return BLACK;
+    }else{
+        return EMPTY;
+    }
+}

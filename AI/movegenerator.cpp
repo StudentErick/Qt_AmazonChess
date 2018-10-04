@@ -54,7 +54,8 @@ void MoveGenerator::CreatePossibleBar(int lx, int ly, int x, int y, int side,
             cm.BarX=k;
             cm.BarY=l;
             cm.side=side;
-            MoveList.push_back(cm);
+            // 加入步法队列
+            MoveList.emplace_back(cm);
 
             ++m_Count;
             k += Offset[t][0];

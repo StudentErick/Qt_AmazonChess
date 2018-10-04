@@ -33,7 +33,8 @@ SOURCES += \
     manager.cpp \
     AI/basicengine.cpp \
     AI/testengine.cpp \
-    AI/movegenerator.cpp
+    AI/movegenerator.cpp \
+    AI/MCTS/mcrave.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -45,7 +46,9 @@ HEADERS += \
     utils.h \
     AI/basicengine.h \
     AI/testengine.h \
-    AI/movegenerator.h
+    AI/movegenerator.h \
+    AI/treenode.h \
+    AI/MCTS/mcrave.h
 
 FORMS += \
         mainwindow.ui

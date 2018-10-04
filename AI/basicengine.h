@@ -24,6 +24,8 @@ protected:
     void MakeMove(const ChessMove& mv);
     void UnMakeMove(const ChessMove& mv);
 
+    // 判断结果，返回获胜的一方或者EMPTY
+    int JudgeResult();
     // 最佳步法
     ChessMove m_bestMove;
     // 搜索引擎真正使用到的棋盘结构
