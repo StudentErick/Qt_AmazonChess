@@ -3,6 +3,8 @@
 
 BasicEngine::BasicEngine()
 {
+    m_MoveGenerator=new MoveGenerator;
+
     // 一定要记得初始化棋盘！！！！！！！
     // 初始化局面
     for(int i=0;i<10;++i){
@@ -18,7 +20,10 @@ BasicEngine::BasicEngine()
 }
 
 BasicEngine::~BasicEngine(){
-
+    if(m_MoveGenerator!=nullptr){
+        delete m_MoveGenerator;
+        delete m_MoveGenerator;
+    }
 }
 
 void BasicEngine::MakeMove(const ChessMove& mv){
@@ -44,23 +49,23 @@ void BasicEngine::DebugBoard(){
     }
 }
 
-int BasicEngine::JudgeResult(){
+int BasicEngine::JudgeResult(int Board[10][10]){
     // 双方被困住的棋子的个数
     int nBlack=0,nWhite=0;
     for(int i=0;i<10;++i){
         for(int j=0;j<10;++j){
-            if(m_nBoard[i][j]==BLACK||m_nBoard[i][j]==WHITE){
+            if(Board[i][j]==BLACK||Board[i][j]==WHITE){
                 int n=0;
                 // 8个方向判别
                 for(int k=0;k<8;++k){
                     int a=i+Offset[k][0];
                     int b=j+Offset[k][1];
-                    if(a<0||a>9||b<0||b>9||m_nBoard[a][b]!=EMPTY){
+                    if(a<0||a>9||b<0||b>9||Board[a][b]!=EMPTY){
                         ++n;
                     }
                 }
                 if(n>=8){  // 8个方向都堵死了
-                    if(m_nBoard[i][j]==BLACK){
+                    if(Board[i][j]==BLACK){
                         ++nBlack;
                     }else{
                         ++nWhite;

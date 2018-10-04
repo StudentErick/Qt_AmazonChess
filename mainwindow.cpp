@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(m_Manager,&Manager::sendOnGame,this,&MainWindow::receiveOnGame);
     // 获取TestEngine
     QObject::connect(ui->actionTestEngine,&QAction::triggered,m_Manager,&Manager::getTestEngine);
+    // 获取MCRave引擎
+
 
 
     /**************************

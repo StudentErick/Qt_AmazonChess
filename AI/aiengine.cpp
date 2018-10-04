@@ -1,5 +1,6 @@
 #include "aiengine.h"
 #include "testengine.h"
+#include "MCTS/mcrave.h"
 
 AIEngine::AIEngine()
 {
@@ -25,7 +26,10 @@ void AIEngine::getEngineNumber(int num){
     **************************************************************/
     switch (m_EngineNum) {
     case 1:
-        m_basciEngine=new TestEngine;
+        m_basciEngine=new TestEngine();
+        break;
+    case 2:
+        m_basciEngine=new MCRave();
         break;
     default:
         m_basciEngine=nullptr;

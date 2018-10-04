@@ -3,14 +3,9 @@
 
 TestEngine::TestEngine()
 {
-    m_MoveGenerator=new MoveGenerator;
 }
 
 TestEngine::~TestEngine(){
-    if(m_MoveGenerator!=nullptr){
-        delete m_MoveGenerator;
-        m_MoveGenerator=nullptr;
-    }
 }
 
 ChessMove TestEngine::getBestMove(const ChessMove& mv){

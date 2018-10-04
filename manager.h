@@ -61,6 +61,8 @@ public slots:
     void initBoard();
     // 获取测试引擎
     void getTestEngine();
+    // 获取MCRave引擎
+    void getMCRaveEngine();
 
     // 调试棋盘用
     void DebugBoard();

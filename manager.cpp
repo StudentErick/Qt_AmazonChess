@@ -238,6 +238,13 @@ void Manager::getTestEngine(){
     emit sendMessage(str);
 }
 
+void Manager::getMCRaveEngine(){
+    m_EngineNumber=2;
+    emit sendEngineNumber(m_EngineNumber);
+    QString str=QString(tr("选中MCRave引擎！"));
+    emit sendMessage(str);
+}
+
 int Manager::JudgeResult(){
     // 双方被困住的棋子的个数
     int nBlack=0,nWhite=0;

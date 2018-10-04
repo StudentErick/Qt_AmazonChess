@@ -119,6 +119,7 @@
       <string>AI引擎选择</string>
      </property>
      <addaction name="actionTestEngine"/>
+     <addaction name="actionMCRave"/>
     </widget>
     <addaction name="menuPVPOrder"/>
     <addaction name="menuPVCOrder"/>
@@ -185,6 +186,11 @@
   <action name="actionTestEngine">
    <property name="text">
     <string>TestEngine</string>
+   </property>
+  </action>
+  <action name="actionMCRave">
+   <property name="text">
+    <string>MCRave</string>
    </property>
   </action>
  </widget>

@@ -21,8 +21,6 @@ public:
 protected:
     // 走法队列
     std::vector<ChessMove>m_MoveList;
-    // 步法生成器指针
-    MoveGenerator* m_MoveGenerator;
 };
 
 #endif // TESTENGINE_H
