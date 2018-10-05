@@ -26,16 +26,16 @@ BasicEngine::~BasicEngine(){
     }
 }
 
-void BasicEngine::MakeMove(const ChessMove& mv){
-    m_nBoard[mv.FromX][mv.FromY]=EMPTY;
-    m_nBoard[mv.ToX][mv.ToY]=mv.side;
-    m_nBoard[mv.BarX][mv.BarY]=BARRIER;
+void BasicEngine::MakeMove(int Board[10][10],const ChessMove& mv){
+    Board[mv.FromX][mv.FromY]=EMPTY;
+    Board[mv.ToX][mv.ToY]=mv.side;
+    Board[mv.BarX][mv.BarY]=BARRIER;
 }
 
-void BasicEngine::UnMakeMove(const ChessMove& mv){
-    m_nBoard[mv.FromX][mv.FromY]=mv.side;
-    m_nBoard[mv.ToX][mv.ToY]=EMPTY;
-    m_nBoard[mv.BarX][mv.BarY]=EMPTY;
+void BasicEngine::UnMakeMove(int Board[10][10],const ChessMove& mv){
+    Board[mv.FromX][mv.FromY]=mv.side;
+    Board[mv.ToX][mv.ToY]=EMPTY;
+    Board[mv.BarX][mv.BarY]=EMPTY;
 }
 
 void BasicEngine::DebugBoard(){

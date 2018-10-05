@@ -24,9 +24,9 @@ protected:
     // Tree policy，按照评估一直搜寻到叶子
     void TreePolicy();
     // default policy，扩展叶子，如果当前状态是叶子，直接返回true
-    bool DefaultPolicy(std::shared_ptr<MCTSNode>node);
+    void DefaultPolicy(std::shared_ptr<MCTSNode>node, int side);
     // 回溯分数，使用负极大的方式
-    void BackUp(std::shared_ptr<MCTSNode>leaf);
+    void BackUp(std::shared_ptr<MCTSNode>node,int leaf_value);
 
     ChessMove m_move;  // 保存传来的走法
     double m_Const;         // 扩展的常数

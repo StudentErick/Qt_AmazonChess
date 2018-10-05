@@ -24,8 +24,8 @@ protected:
     // 调试棋盘用
     void DebugBoard();
 
-    void MakeMove(const ChessMove& mv);
-    void UnMakeMove(const ChessMove& mv);
+    void MakeMove(int Board[10][10],const ChessMove& mv);
+    void UnMakeMove(int Board[10][10],const ChessMove& mv);
 
     // 判断结果，返回获胜的一方或者EMPTY
     int JudgeResult(int Board[10][10]);
