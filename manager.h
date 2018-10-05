@@ -40,6 +40,8 @@ signals:
     void sendEngineNumber(int num);
     // 发送对弈信号，如果是对弈进行中，那么除了结束之外，所有的选项都不能用
     void sendOnGame(bool flag);
+    // 发送AI停止计算的消息
+    void sendAIStop();
 public slots:
     // 前一步
     void previousMove();
@@ -63,6 +65,8 @@ public slots:
     void getTestEngine();
     // 获取MCRave引擎
     void getMCRaveEngine();
+    // 获取点击停止AI按键
+    void getStopAI();
 
     // 调试棋盘用
     void DebugBoard();

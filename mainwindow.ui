@@ -78,6 +78,19 @@
      <string>清空信息</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnStopAI">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>260</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>终止AI计算</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QMenuBar" name="menuBar">

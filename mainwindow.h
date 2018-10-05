@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 /*
 * 主界面
-* Erick Lv 09/30/2018
+* Erick Lv 2018/09/30
 */
 #include <QMainWindow>
 #include <QObject>

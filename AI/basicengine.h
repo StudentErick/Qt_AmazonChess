@@ -22,7 +22,7 @@ public:
 protected:
 
     // 调试棋盘用
-    void DebugBoard();
+    void DebugBoard(int Board[10][10]);
 
     void MakeMove(int Board[10][10],const ChessMove& mv);
     void UnMakeMove(int Board[10][10],const ChessMove& mv);

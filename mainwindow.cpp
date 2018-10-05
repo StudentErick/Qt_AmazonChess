@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // 悔棋和后一步在未开始状态不能用
     ui->btnNextStep->setEnabled(false);
     ui->btnPrevStep->setEnabled(false);
+    // 终止AI不能用
+    ui->btnStopAI->setEnabled(false);
 
 
     /***********************
@@ -39,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // 获取TestEngine
     QObject::connect(ui->actionTestEngine,&QAction::triggered,m_Manager,&Manager::getTestEngine);
     // 获取MCRave引擎
-
+    QObject::connect(ui->actionMCRave,&QAction::triggered,m_Manager,&Manager::getMCRaveEngine);
 
 
     /**************************
@@ -97,8 +99,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(m_Manager,&Manager::sendMoveMsgToAI,m_AIEngine,&AIEngine::getMove);
     // 获取AI的走法
     QObject::connect(m_AIEngine,&AIEngine::sendResult,m_Manager,&Manager::getMove);
-    // 发送测试引擎的编号
+    // 发送引擎的编号
     QObject::connect(m_Manager,&Manager::sendEngineNumber,m_AIEngine,&AIEngine::getEngineNumber);
+    // 发送停止计算的信号
+    QObject::connect(m_Manager,&Manager::sendAIStop,m_AIEngine,&AIEngine::getStopSignal);
 
 
     /***************
@@ -141,6 +145,7 @@ void MainWindow::receiveOnGame(bool flag){
 
         ui->btnNextStep->setEnabled(true);
         ui->btnPrevStep->setEnabled(true);
+        ui->btnStopAI->setEnabled(true);
 
         ui->actionAboutThis->setEnabled(false);
         ui->actionAboutAuthor->setEnabled(false);
@@ -152,6 +157,7 @@ void MainWindow::receiveOnGame(bool flag){
 
         ui->btnNextStep->setEnabled(false);
         ui->btnPrevStep->setEnabled(false);
+        ui->btnStopAI->setEnabled(false);
 
         ui->actionAboutThis->setEnabled(true);
         ui->actionAboutAuthor->setEnabled(true);

@@ -45,3 +45,7 @@ void AIEngine::run(){
     auto m=m_basciEngine->getBestMove(m_getMove);
     emit sendResult(m);         // 发送搜索结果
 }
+
+void AIEngine::getStopSignal(){
+    m_basciEngine->setSearchFlag(false);
+}

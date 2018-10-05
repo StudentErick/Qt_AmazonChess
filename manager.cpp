@@ -176,6 +176,17 @@ void Manager::PVC_PFirst(){
     emit sendCheckable(true);  // 可以点击棋盘
 }
 
+void Manager::getStopAI(){
+    if(m_GameMode==PVP){
+        emit sendMessage(tr("当前是PVP模式，终止操作无效！"));
+        return;
+    }
+    else{
+        emit sendMessage(tr("停止操作成功！"));
+        emit sendAIStop();  // 发送停止信号
+    }
+}
+
 void Manager::initBoard(){
     // 初始化局面
     for(int i=0;i<10;++i){

@@ -38,11 +38,11 @@ void BasicEngine::UnMakeMove(int Board[10][10],const ChessMove& mv){
     Board[mv.BarX][mv.BarY]=EMPTY;
 }
 
-void BasicEngine::DebugBoard(){
+void BasicEngine::DebugBoard(int Board[10][10]){
     QString str;
     for(int i=0;i<10;++i){
         for(int j=0;j<10;++j){
-            str+=(QString::number(m_nBoard[i][j],10)+" ");
+            str+=(QString::number(Board[i][j],10)+",");
         }
         qDebug()<<str;
         str.clear();

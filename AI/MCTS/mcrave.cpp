@@ -1,86 +1,147 @@
 #include "mcrave.h"
 #include <algorithm>
-#include <random>
 #include <cstring>
 #include <cmath>
+#include <cassert>
+#include <QDebug>
 
 MCRave::MCRave(double contant)
 {
     m_Const=contant;  // 设置扩展常数
+    m_timeDiff=5.0;     // 5秒的时间限制
+    m_searchFlag=true;
 }
 
 ChessMove MCRave::getBestMove(const ChessMove& mv){
     m_move=mv;
-    MakeMove(m_nBoard,mv);  // 走出传来的步法
+    if(mv.side!=COMPUTER_FIRST_STEP){
+        MakeMove(m_nBoard,mv);  // 走出传来的步法
+    }
     // 构造根节点
-    root=std::make_shared<MCTSNode>(m_nBoard,m_Const);
-    root.reset(); // 销毁搜索树
-    return m_bestMove;
-}
-
-
-void MCRave::TreePolicy(){
-    int side=m_move.side;  // 当前走子方
-    std::vector<ChessMove>MoveList;
-    auto curBoard=m_nBoard;  // 获取当前局面
-    auto curNode=root;
+    root=std::make_shared<MCTSNode>(m_nBoard,BLACK,m_Const);
+    DefaultPolicy(root);// 根节点至少一次rollout out 操作
+    decltype (root) bestChild;
+    time(&startTime);  // 开始计时
     while(m_searchFlag){
-        ++curNode->n_visits;  // 访问次数+1
-        if(curNode->is_leaf()){
-            m_MoveGenerator->CreatePossibleMove(curBoard,side,curNode->UnTriedMove);
-            DefaultPolicy(curNode,side); // 只能对叶子节点进行default policy操作
-        }else{
-            // 有没拓展的节点
-            if(! curNode->UnTriedMove.empty()){
-                auto mv=curNode->UnTriedMove.back();
-                curNode->UnTriedMove.erase(curNode->UnTriedMove.end()-1);  // 删除
-                MakeMove(curBoard,mv);  // 模拟走出一步
-                curNode->pChild.emplace_back(std::make_shared<MCTSNode>(curBoard,m_Const));
-                UnMakeMove(curBoard,mv); // 恢复状态
-            }
-            else{
-                auto index=static_cast<std::vector<MCTSNode>::size_type>(0);
-                // 寻找最佳的孩子
-                std::for_each(curNode->pChild.begin(),curNode->pChild.end(),[&index,&curNode](const auto& p){
-                    if(p->value>curNode->pChild[index]->value){
-                        index++;
-                    }
-                });
-                curNode=curNode->pChild[index];  // 下降
-                curBoard=curNode->state;  // 保存状态
-                side=-side;  // 交换走子方
+        if(root->isFullyExpanded){ // 完全展开的根节点直接获取结果即可
+            bestChild=getBestChild(root);
+            break;
+        }
+        auto leaf=TreePolicy(root);
+        int value=DefaultPolicy(leaf);
+        BackUp(leaf,value);
+        time(&endTime);
+        if(difftime(endTime,startTime)>m_timeDiff){
+            break;
+        }
+    }
+
+    bestChild=getBestChild(root);
+
+    // 从前后的状态差计算出一次移动
+    for(int i=0;i<10;++i){
+        for(int j=0;j<10;++j){
+            if(m_nBoard[i][j]==BLACK&&bestChild->state[i][j]!=BLACK){
+                m_bestMove.FromX=i;
+                m_bestMove.FromY=j;
+            }else if(m_nBoard[i][j]!=BLACK&&bestChild->state[i][j]==BLACK){
+                m_bestMove.ToX=i;
+                m_bestMove.ToY=j;
+            }else if(m_nBoard[i][j]!=BARRIER&&bestChild->state[i][j]==BARRIER){
+                m_bestMove.BarX=i;
+                m_bestMove.BarY=j;
             }
         }
     }
+
+    root.reset(); // 销毁搜索树
+    m_bestMove.side=BLACK;
+    MakeMove(m_nBoard,m_bestMove);  // 别忘了走出
+    return m_bestMove;
 }
 
-void MCRave::DefaultPolicy(std::shared_ptr<MCTSNode>node, int side){
-    int res=JudgeResult(node->state);  // 是否是最终节点
-    int Board[10][10];
-    memcpy(Board,node->state,10*10*sizeof (int));  // 拷贝棋盘状态
-    while(res!=EMPTY){
-
-        std::vector<ChessMove>MoveList;
-        int n=m_MoveGenerator->CreatePossibleMove(node->state,side,MoveList);  // 模拟步法
-        MoveList.clear();  // 清空
-        // 随机走出一步
-        std::mt19937 rng;
-        rng.seed(std::random_device()());
-        std::uniform_int_distribution<std::mt19937::result_type> dist6(1, static_cast<unsigned long>(n));
-        n=static_cast<int>(dist6(rng));
-        auto m=MoveList[static_cast<std::vector<ChessMove>::size_type>(n)];  // 获取随机的一步
-
-        MakeMove(Board,m);    // 模拟向下走
-        res=JudgeResult(Board);
+std::shared_ptr<MCTSNode>& MCRave::getBestChild(std::shared_ptr<MCTSNode>&node){
+    auto index=static_cast<std::vector<MCTSNode>::size_type>(0);
+    auto len=node->pChild.size();
+    auto i=static_cast<std::vector<MCTSNode>::size_type>(0);
+    // 寻找最佳的孩子
+    for(i=0;i<len;++i){
+        if(node->pChild[i]->value>node->pChild[index]->value){
+            index=i;
+        }
     }
-    BackUp(node,res);  // 回溯
+    ++node->pChild[index]->n_visits;   // 节点访问次数+1，回溯时就不用再+1了
+    return node->pChild[index];
 }
 
-void MCRave::BackUp(std::shared_ptr<MCTSNode>node,int leaf_value){
+std::shared_ptr<MCTSNode> MCRave::TreePolicy(std::shared_ptr<MCTSNode>& node){
+    ++node->n_visits;  // 节点访问次数+1，回溯时就不用再+1了
+    if(! node->UnTriedMove.empty()){  // 返回未展开的节点，总是从末尾取出
+        auto mv=node->UnTriedMove.back();
+        node->UnTriedMove.erase(node->UnTriedMove.end()-1);  // 删除
+        MakeMove(node->state,mv);  // 模拟走出
+        node->pChild.emplace_back(std::make_shared<MCTSNode>(node->state,-node->side,node->nUct));
+        UnMakeMove(node->state,mv);  // 恢复状态
+        ++node->pChild.back()->n_visits;
+        return node->pChild.back();  // 返回没有探索的节点
+    }else{
+        auto curNode=node;
+        bool flag=true;
+        // 判断当前节点是否是完全展开的
+        for(const auto& child:node->pChild){
+            flag=(flag&child->isFullyExpanded);
+        }
+        if(flag){ // 完全展开的节点没有往下搜索的必要了
+            curNode->isFullyExpanded=true;
+            return getBestChild(curNode);
+        }
+        while(!curNode->is_leaf()){  //一直搜寻到叶子节点
+            curNode=getBestChild(curNode);
+            if(curNode->isFullyExpanded){
+                return curNode;
+            }
+        }
+        return curNode;
+    }
+}
+
+int MCRave::DefaultPolicy(std::shared_ptr<MCTSNode>& node){
+    decltype (node->state) Board;
+    memcpy(Board,node->state,10*10*sizeof (int));
+    int n=m_MoveGenerator->CreatePossibleMove(Board,node->side,node->UnTriedMove);
+
+    int res=JudgeResult(Board);
+    if(n==0){  // 已经是最终状态了
+        node->isFullyExpanded=true;  // 彻底的展开状态，不需要后续搜索了
+        return res;
+    }
+    using type=std::vector<ChessMove>::size_type;
+    n=rand()%n;   // 获取随机的一步
+    auto mv=node->UnTriedMove[static_cast<type>(n)];  // 获取随机的一步
+    std::vector<ChessMove>MoveList;
+    int side=node->side;
+    while(res==EMPTY){
+        MakeMove(Board,mv);
+        res=JudgeResult(Board);
+        if(res!=EMPTY){
+            return res;
+        }
+        n=m_MoveGenerator->CreatePossibleMove(Board,side,MoveList);
+        n=rand()%n;  // 获取随机一步
+        mv=MoveList[static_cast<type>(n)];  // 获取随机的一步
+        MoveList.clear();
+        side=-side;  // 转换次序
+    }
+    return res;
+}
+
+void MCRave::BackUp(std::shared_ptr<MCTSNode>&node, int leaf_value){
     while(node->pParent.lock()!=nullptr){
+        // 非根节点
         node->Qsa=(leaf_value-node->Qsa)/node->n_visits;
-        node->u=node->nUct*std::sqrt(std::log(node->pParent.lock()->n_visits)/(1+node->n_visits));
-        node=node->pParent.lock();
+        node->u=node->Qsa+
+                node->nUct*std::sqrt(std::log(node->pParent.lock()->n_visits)/node->n_visits);
         leaf_value=-leaf_value;
+        node=node->pParent.lock();
     }
 }

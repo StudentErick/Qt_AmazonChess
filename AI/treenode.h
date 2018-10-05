@@ -19,6 +19,8 @@ struct MCTSNode{
     double u;     // 先验概率
     double value; // 评估值
     double nUct;  // UCT常数，控制搜索的
+    int side;        // 当前节点的颜色
+    bool isFullyExpanded;  // 是否完全展开，如果完全展开了就不用rollout out了
 
     int state[10][10];  // 当前的局面状态
 
@@ -34,13 +36,16 @@ struct MCTSNode{
         n_visits=0;
         u=0.0;
         nUct=n_uct;
+        isFullyExpanded=false;
     }
 
-    MCTSNode(int Board[10][10],double n_uct=1.41){
+    MCTSNode(int Board[10][10],int _side,double n_uct=1.41){
         Qsa=0.0;
         n_visits=0;
         u=0.0;
         nUct=n_uct;
+        isFullyExpanded=false;
+        side=_side;
         memcpy(state,Board,10*10*sizeof (int));  // 复制状态
     }
 

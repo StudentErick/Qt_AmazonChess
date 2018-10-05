@@ -26,6 +26,8 @@ public slots:
     void getMove(ChessMove move);
     // 启动计算线程进行运算
     void run();
+    // 获取是否可以进行计算的标记
+    void getStopSignal();
 
 protected:
     // 搜索引擎
