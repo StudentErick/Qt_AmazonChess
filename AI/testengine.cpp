@@ -1,5 +1,4 @@
 #include "testengine.h"
-#include <random>
 
 TestEngine::TestEngine()
 {
@@ -16,14 +15,15 @@ ChessMove TestEngine::getBestMove(const ChessMove& mv){
         m.side=WHITE;
     }
 
+    DebugBoard(m_nBoard);
+
+    std::vector<ChessMove>m_MoveList;
+
     // 注意负号，计算机永远是黑色的，传来的步法永远是白色的
     int n=m_MoveGenerator->CreatePossibleMove(m_nBoard,-m.side,m_MoveList);
 
     // 随机走出一步
-    std::mt19937 rng;
-    rng.seed(std::random_device()());
-    std::uniform_int_distribution<std::mt19937::result_type> dist6(1, static_cast<unsigned long>(n));
-    n=static_cast<int>(dist6(rng));
+    n=rand()%n;
     m=m_MoveList[static_cast<std::vector<ChessMove>::size_type>(n)];  // 获取随机的一步
 
     MakeMove(m_nBoard,m);    // 这里一定要走出一步！！！！！

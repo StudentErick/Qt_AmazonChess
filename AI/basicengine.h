@@ -19,6 +19,10 @@ public:
     virtual ChessMove getBestMove(const ChessMove& mv)=0;
     // 设置继续搜索或者停止
     void setSearchFlag(bool flag){m_searchFlag=flag;}
+    // 获取节点个数
+    decltype (auto) getNodeCount(){return m_nCount;}
+    // 初始化节点个数
+    void initCount(){m_nCount=0;}
 protected:
 
     // 调试棋盘用
@@ -38,6 +42,8 @@ protected:
     ChessMove m_bestMove;
     // 搜索引擎真正使用到的棋盘结构
     int m_nBoard[10][10];
+
+    unsigned long long m_nCount;   // 节点的个数
 };
 
 #endif // BASICENGINE_H

@@ -44,6 +44,12 @@ struct ChessMove{
     int FromX,FromY; // 取皇后的位置
     int ToX,ToY;     // 放皇后的位置
     int BarX,BarY;   // 放障碍的位置
+    void operator=(const ChessMove& mv){
+        side=mv.side;
+        FromX=mv.FromX;FromY=mv.FromY;
+        ToX=mv.ToX;ToY=mv.ToY;
+        BarX=mv.BarX;BarY=mv.BarY;
+    }
 };
 
 // 封装判断共线的数据

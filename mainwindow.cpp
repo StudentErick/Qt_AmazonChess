@@ -104,6 +104,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // 发送停止计算的信号
     QObject::connect(m_Manager,&Manager::sendAIStop,m_AIEngine,&AIEngine::getStopSignal);
 
+    /***************
+    * 获取搜索节点 *
+    ***************/
+    QObject::connect(m_AIEngine,&AIEngine::sendGameMsg,m_GameMesage,&GameMessage::receiveMessage);
 
     /***************
     * 软件信息弹窗 *

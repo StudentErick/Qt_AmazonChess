@@ -19,6 +19,8 @@ public:
 signals:
     // 发送计算的结果
     void sendResult(ChessMove move);
+    // 发送计算结果
+    void sendGameMsg(QString str);
 public slots:
     // 获取使用的AI引擎的编号
     void getEngineNumber(int num);

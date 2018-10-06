@@ -44,6 +44,11 @@ void AIEngine::getMove(ChessMove chessmove){
 void AIEngine::run(){
     auto m=m_basciEngine->getBestMove(m_getMove);
     emit sendResult(m);         // 发送搜索结果
+    auto sum=m_basciEngine->getNodeCount();
+    QString num=QString::number(sum,10);
+    QString str=tr("总共搜索节点个数：%1").arg(sum);
+    emit sendGameMsg(str);
+    m_basciEngine->initCount();
 }
 
 void AIEngine::getStopSignal(){

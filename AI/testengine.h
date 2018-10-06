@@ -18,9 +18,6 @@ public:
     virtual ~TestEngine()override;
     // 重写基类的函数
     virtual ChessMove getBestMove(const ChessMove& mv)override;
-protected:
-    // 走法队列
-    std::vector<ChessMove>m_MoveList;
 };
 
 #endif // TESTENGINE_H
